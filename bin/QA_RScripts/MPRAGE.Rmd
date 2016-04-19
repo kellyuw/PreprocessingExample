@@ -1,0 +1,107 @@
+---
+title: "Quality Assurance of Structural Data for ID SUBJECT (SESSION)"
+output:
+  html_document:
+    keep_md: yes
+    toc: yes
+---
+
+
+#T1 SKULLSTRIPPING (MPRAGE)
+<div id="skullstrip">
+<img src="Images/T1_brain.gif" />
+
+#T1 SKULLSTRIPPING (optiBET)
+<img src="Images/T1_optiBET_brain_mask.gif" />
+</div>
+
+#FreeSurfer QA Images
+
+##TALAIRACH
+<img src="Images/FreeSurfer/SUBJECT_cor.gif" />
+<img src="Images/FreeSurfer/SUBJECT_sag.gif" />
+<img src="Images/FreeSurfer/SUBJECT_hor.gif" />
+
+##ASEG
+<img src="Images/FreeSurfer/SUBJECT_aseg-cor1.gif" />
+<img src="Images/FreeSurfer/SUBJECT_aseg-cor2.gif" />
+<img src="Images/FreeSurfer/SUBJECT_aseg-cor3.gif" />
+<img src="Images/FreeSurfer/SUBJECT_aseg-cor7.gif" />
+<img src="Images/FreeSurfer/SUBJECT_aseg-cor4.gif" />
+<img src="Images/FreeSurfer/SUBJECT_aseg-cor5.gif" />
+<img src="Images/FreeSurfer/SUBJECT_aseg-cor6.gif" />
+<img src="Images/FreeSurfer/SUBJECT_aseg-templh.gif" />
+<img src="Images/FreeSurfer/SUBJECT_aseg-temprh.gif" />
+
+##COR
+<img src="Images/FreeSurfer/SUBJECT_cor1.gif" />
+<img src="Images/FreeSurfer/SUBJECT_cor2.gif" />
+<img src="Images/FreeSurfer/SUBJECT_cor3.gif" />
+<img src="Images/FreeSurfer/SUBJECT_cor7.gif" />
+<img src="Images/FreeSurfer/SUBJECT_cor4.gif" />
+<img src="Images/FreeSurfer/SUBJECT_cor5.gif" />
+<img src="Images/FreeSurfer/SUBJECT_cor6.gif" />
+<img src="Images/FreeSurfer/SUBJECT_templh.gif" />
+<img src="Images/FreeSurfer/SUBJECT_temprh.gif" />
+
+##INFLATED
+<img src="Images/FreeSurfer/SUBJECT_lh_inf.gif" />
+<img src="Images/FreeSurfer/SUBJECT_lh_lat.gif" />
+<img src="Images/FreeSurfer/SUBJECT_lh_med.gif" />
+<img src="Images/FreeSurfer/SUBJECT_rh_inf.gif" />
+<img src="Images/FreeSurfer/SUBJECT_rh_lat.gif" />
+<img src="Images/FreeSurfer/SUBJECT_rh_med.gif" />
+
+##CURV
+<img src="Images/FreeSurfer/SUBJECT_curv_lh_inf.gif" />
+<img src="Images/FreeSurfer/SUBJECT_curv_lh_lat.gif" />
+<img src="Images/FreeSurfer/SUBJECT_curv_lh_med.gif" />
+<img src="Images/FreeSurfer/SUBJECT_curv_rh_inf.gif" />
+<img src="Images/FreeSurfer/SUBJECT_curv_rh_lat.gif" />
+<img src="Images/FreeSurfer/SUBJECT_curv_rh_med.gif" />
+
+##PARC
+<img src="Images/FreeSurfer/SUBJECT_parc_lh_inf.gif" />
+<img src="Images/FreeSurfer/SUBJECT_parc_lh_lat.gif" />
+<img src="Images/FreeSurfer/SUBJECT_parc_lh_med.gif" />
+<img src="Images/FreeSurfer/SUBJECT_parc_rh_inf.gif" />
+<img src="Images/FreeSurfer/SUBJECT_parc_rh_lat.gif" />
+<img src="Images/FreeSurfer/SUBJECT_parc_rh_med.gif" />
+
+
+
+#FAST SEGMENTATION
+
+##CSF
+<img src="Images/csf.gif" />
+
+##Grey Matter
+<img src="Images/gm.gif" />
+
+##White Matter
+<img src="Images/wm.gif" />
+
+
+
+#REGISTRATIONS
+
+##ANTS Diffeomorphic Registration from FSL
+
+###NIH
+
+<img src="Images/T1_to_nih_deformed.gif" />
+
+###MNI
+
+<img src="Images/T1_to_mni_deformed.gif" />
+
+
+##ANTS Diffeomorphic Registration from FreeSurfer
+
+###NIH
+
+<img src="Images/fs_to_nih_deformed.gif" />
+
+###MNI
+<img src="Images/fs_to_mni_deformed.gif" />
+

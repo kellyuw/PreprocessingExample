@@ -1,0 +1,192 @@
+---
+title: Quality Assurance of Preprocessing for RUN for ID SUBJECT (SESSION)
+output:
+  html_document:
+    keep_md: yes
+    toc: yes
+    force_captions: TRUE
+---
+
+#PARAMETERS
+
+##Raw Data Parameters (from PAR)
+
+```{r engine='bash', echo=FALSE}
+if [ -f Images/TASK/RUN.PAR ]; then
+  grep -e 'Patient name' Images/TASK/RUN.PAR
+  grep -e 'Examination date/time' Images/TASK/RUN.PAR
+  grep -e 'Scan Duration' Images/TASK/RUN.PAR
+  grep -e 'Max. number of dynamics' Images/TASK/RUN.PAR
+  grep -e 'Max. number of slices/locations' Images/TASK/RUN.PAR
+  grep -e 'Repetition time' Images/TASK/RUN.PAR
+  grep -e 'Scan resolution' Images/TASK/RUN.PAR
+  grep -e 'FOV' Images/TASK/RUN.PAR
+  grep -e 'EPI factor' Images/TASK/RUN.PAR
+  grep -e 'Water Fat shift' Images/TASK/RUN.PAR
+  grep -e 'Preparation direction' Images/TASK/RUN.PAR
+  SliceThick=`tail -3 Images/TASK/RUN.PAR | head -1 | awk {'print $23'}`
+  echo ".    Slice Thickness (in mm)            :   $SliceThick"
+  SliceGap=`tail -3 Images/TASK/RUN.PAR | head -1 | awk {'print $24'}`
+  echo ".    Slice Gap (in mm)                  :   $SliceGap"
+  SliceOrientation=`tail -3 Images/TASK/RUN.PAR | head -1 | awk {'print $26'}`
+  if [ SliceOrientation==1 ]; then SliceOr='TRA'; elif [ SliceOrientation==2 ]; then SliceOr='SAG'; elif [ SliceOrientation==3 ]; then SliceOr='COR'; fi
+  echo ".    Slice Orientation                  :   $SliceOrientation ($SliceOr)" 
+  PixelSpacingX=`tail -3 Images/TASK/RUN.PAR | head -1 | awk {'print $29'}`
+  PixelSpacingY=`tail -3 Images/TASK/RUN.PAR | head -1 | awk {'print $30'}`
+  echo ".    Pixel Spacing (x,y in mm)          :   $PixelSpacingX x $PixelSpacingY"
+  EchoTime=`tail -3 Images/TASK/RUN.PAR | head -1 | awk {'print $31'}`
+  echo ".    Echo Time                          :   $EchoTime"
+  FlipAngle=`tail -3 Images/TASK/RUN.PAR | head -1 | awk {'print $36'}`
+  echo ".    Flip Angle (degrees)               :   $FlipAngle"
+fi
+```
+
+##Preprocessing Parameters (from Preprocess.mk)
+
+```{r engine='bash', echo=FALSE}
+tr=`grep -e 'TR=' ../PreprocessSubject.mk | cut -d "=" -f "2" `
+echo ".    TR                                 :   $tr"
+slorder=`grep -e 'SLICEORDER=' ../PreprocessSubject.mk | cut -d "=" -f "2"`
+echo ".    Slice Order                        :   $slorder"
+fd=`grep -e 'FDTHRESH=' ../PreprocessSubject.mk | cut -d "=" -f "2"`
+echo ".    Framewise Displacement Threshold   :   $fd mm"
+hwhm=`grep -e 'HWHM=' ../PreprocessSubject.mk | cut -d "=" -f "2"`
+echo ".    SUSAN HWHM                         :   $hwhm"
+#feat=`ls ../TASK/*.feat/design.fsf | head -n 1`
+#highpass=`grep -e 'paradigm_hp' ${feat} | cut -d " " -f "3"`
+#echo ".    Highpass filter cutoff             :   $highpass seconds"
+```
+
+
+#RAW DATA QUALITY
+
+##Time Series Difference Analysis
+<img src="Images/TASK/RUN_tsdiffana.gif" width="750px" />
+
+##Temporal Signal-to-Noise Ratio
+
+###Temporal Mean
+
+<img src="Images/TASK/RUN_tsnr_mean.gif" width="750px" />
+
+###Temporal Standard Deviation
+
+<img src="Images/TASK/RUN_tsnr_stddev.gif" width="750px" />
+
+###Temporal Signal-to-Noise
+
+<img src="Images/TASK/RUN_tsnr.gif" width="750px" />
+
+
+# MOTION
+
+##Motion Statistics
+```{r engine='bash', echo=FALSE}
+val=`cat ../TASK/RUN_mean_abs_disp.txt`
+echo "Mean Absolute Displacement : $val mm" 
+val=`cat ../TASK/RUN_mean_rel_disp.txt`
+echo "Mean Relative Displacement : $val mm"
+val=`cat ../TASK/RUN_max_abs_disp.txt`
+echo "Maximum Absolute Displacement : $val mm" 
+val=`cat ../TASK/RUN_max_rel_disp.txt`
+echo "Maximum Relative Displacement : $val mm" 
+
+```
+
+##Rotations and Translations
+(X = Blue; Y = Golden; Z = Green)
+
+<img src="Images/TASK/RUN_MotionGraphRotations.gif" width="400px" />
+<img src="Images/TASK/RUN_MotionGraphTranslations.gif" width="400px" />
+
+##Slice-timing and Motion Corrected Data Movie
+<img src="Images/TASK/RUN_mc_x_animation.gif" width="300px" />
+<img src="Images/TASK/RUN_mc_y_animation.gif" width="300px" />
+<img src="Images/TASK/RUN_mc_z_animation.gif" width="300px" />
+
+
+
+#OUTLIER DETECTION
+
+##All Outliers
+
+List of All Outliers
+```{r engine='bash', echo=FALSE}
+cat ../TASK/RUN_all_outliers.txt
+```
+
+Percentage of Outlier Volumes
+```{r engine='bash', echo=FALSE}
+val=`cat ../TASK/RUN_percent_outliers.txt`
+echo "${val}%"
+```
+
+
+##Framewise Displacement
+Displacement Outliers
+```{r engine='bash', echo=FALSE}
+cat ../TASK/RUN_fd_spike_vols
+```
+<img src="Images/TASK/RUN_fd_vals.gif" width="400px" />
+
+
+##Signal Intensity (DVARS)
+DVARS Outliers
+```{r engine='bash', echo=FALSE}
+cat ../TASK/RUN_dvars_spike_vols
+```
+<img src="Images/TASK/RUN_dvars_vals.gif" width="400px" />
+
+
+##Scanner Noise
+Scanner Noise Outliers
+```{r engine='bash', echo=FALSE}
+cat ../TASK/RUN_SN_outliers.txt
+```
+
+#SKULL-STRIPPING
+##Skull-stripped Data Movie
+<img src="Images/TASK/RUN_bet_x_animation.gif" width="300px" />
+<img src="Images/TASK/RUN_bet_y_animation.gif" width="300px" />
+<img src="Images/TASK/RUN_bet_z_animation.gif" width="300px" />
+
+
+#DESPIKING
+##Spike Movie
+<img src="Images/TASK/RUN_spikiness_x_animation.gif" width="300px" />
+<img src="Images/TASK/RUN_spikiness_y_animation.gif" width="300px" />
+<img src="Images/TASK/RUN_spikiness_z_animation.gif" width="300px" />
+
+##Despiked Data Movie
+<img src="Images/TASK/RUN_despike_x_animation.gif" width="300px" />
+<img src="Images/TASK/RUN_despike_y_animation.gif" width="300px" />
+<img src="Images/TASK/RUN_despike_z_animation.gif" width="300px" />
+
+#SPATIAL SMOOTHING
+##Smoothed Data Movie
+<img src="Images/TASK/RUN_ssmooth_x_animation.gif" width="300px" />
+<img src="Images/TASK/RUN_ssmooth_y_animation.gif" width="300px" />
+<img src="Images/TASK/RUN_ssmooth_z_animation.gif" width="300px" />
+
+
+#REGISTRATIONS
+##FSL's epi_reg to Structural
+<img src="Images/TASK/RUN_to_T1.gif" width="1500px" />
+
+##epi_reg to T1 and ANTS to Standard Spaces
+
+###NIH
+<img src="Images/TASK/RUN_to_nih_epireg_ants.gif" width="1500px" />
+
+###MNI
+<img src="Images/TASK/RUN_to_mni_epireg_ants.gif" width="1500px" />
+
+##BBRegister with ANTS to Standard Spaces
+
+###NIH
+<img src="Images/TASK/RUN_to_nih_bbr_ants.gif" width="1500px" />
+
+###MNI
+<img src="Images/TASK/RUN_to_mni_bbr_ants.gif" width="1500px" />
+
+

@@ -1,0 +1,3 @@
+#!/bin/bash
+cd /mnt/stressdevlab/dep_threat_pipeline/101
+make -k PreprocessSubject

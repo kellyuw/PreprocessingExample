@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# make x, y, and z .gif images out any 3D nifti file
+#
+
+# Takes 4 inputs (input nifti file, output (QA) directory, slice interval, and slice image size)
+# Usages: make_xyz <input 3D nifti file> <output directory> <slice interval> <slice image size>
+
+if [ $# -lt 4 ]; then
+	echo
+	echo   "make_xyz <input 3D nifti file> <output directory> <slice interval> <slice image size>"
+	echo
+	exit
+fi
+
+input=$1
+outputpath=$2
+sliceInterval=$3
+ImageSize=$4
+
+echo $input
+echo $outputpath
+
+mkdir TempImages
+
+echo making images
+
+for direction in x y z; do
+
+	#Set vars
+		if [ $direction	== x ]; then
+			numSlices=`fslval $input dim1`
+		elif [ $direction == y ]; then
+			numSlices=`fslval $input dim2`
+		elif [ $direction == z ]; then
+			numSlices=`fslval $input dim3`
+		fi
+
+	sliceMin=$(printf %0.f $(echo "$numSlices*0.15" | bc))
+	sliceMax=$(printf %0.f $(echo "$numSlices-$sliceMin" | bc))
+
+	echo Number of Slices = $numSlices Direction = $direction
+
+		for slice in `seq $sliceMin $sliceInterval $sliceMax`; do
+			FormattedSlice=`printf %03.f $slice`
+			/usr/share/fsl/5.0/bin/slicer ${input} -${direction} -${slice} TempImages/${direction}_${FormattedSlice}_sliced.png
+			convert TempImages/${direction}_${FormattedSlice}_sliced.png -size ${ImageSize} -shave 5x5 PNG32:TempImages/${direction}_${FormattedSlice}_sliced.png
+		done
+
+	montage TempImages/${direction}_*_sliced.png -geometry +1+1 -background black TempImages/`basename ${input}`_${direction}.png
+
+	convert TempImages/`basename ${input}`_${direction}.png -bordercolor White -border 5 ${outputpath}/`basename $input .nii.gz`_${direction}.gif
+
+done
+
+echo cleaning up
+
+rm -r TempImages

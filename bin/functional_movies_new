@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# make animated gifs out of the functonal runs
+#
+
+# Takes 3 inputs (input functional run, output (QA) directory, and slice interval)
+# Usages: functional_movies.sh <input 4D nifti file> <output directory> <slice interval>
+
+if [ $# -lt 3 ]; then
+	echo
+	echo   "functional_movies <input 4D nifti file> <output directory> <slice interval>"
+	echo
+	exit
+fi
+
+input=$1
+baseinput=`basename $1 .nii.gz`
+outputpath=$2
+sliceInterval=$3
+mkdir -p ${outputpath}
+
+tempdir="${outputpath}/temp${baseinput}"
+mkdir -p ${tempdir}
+
+echo $input
+echo $outputpath
+
+mkdir ${tempdir}
+
+echo splitting file
+fslsplit ${input} ${tempdir}/split_ -t
+
+echo making images
+
+for direction in x y z; do
+
+	#Set vars
+		if [ $direction	== x ]; then
+			numSlices=`fslval $input dim1`
+		elif [ $direction == y ]; then
+			numSlices=`fslval $input dim2`
+		elif [ $direction == z ]; then
+			numSlices=`fslval $input dim3`
+		fi
+
+	sliceMin=$(printf %0.f $(echo "$numSlices*0.15" | bc))
+	sliceMax=$(printf %0.f $(echo "$numSlices-$sliceMin" | bc))
+
+	echo Number of Slices = $numSlices Direction = $direction
+
+	for volume in ${tempdir}/split_*.nii.gz; do
+		echo working on volume $volume
+
+			for slice in `seq $sliceMin $sliceInterval $sliceMax`; do
+				FormattedSlice=`printf %03.f $slice`
+				/usr/share/fsl/5.0/bin/slicer ${volume} -${direction} -${slice} ${volume}_${direction}_${FormattedSlice}_sliced.png
+				convert ${volume}_${direction}_${FormattedSlice}_sliced.png -size 50 -shave 5x5 PNG32:${volume}_${direction}_${FormattedSlice}_sliced.png
+			done
+
+		montage ${volume}_${direction}*_sliced.png -geometry +1+1 -background black ${tempdir}/`basename ${volume}`_${direction}.png
+
+	done
+
+	convert ${tempdir}/split_*_${direction}.png -coalesce -delay 10 -layers optimize -shave 5x5 ${outputpath}/${baseinput}_${direction}_animation.gif
+
+done
+
+echo cleaning up
+
+rm -r ${tempdir}
